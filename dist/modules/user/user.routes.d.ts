@@ -1,3 +1,2 @@
-/// <reference types="express" />
-declare const userRouter: import("express").Router;
-export default userRouter;
+declare const router: import("express-serve-static-core").Router;
+export default router;

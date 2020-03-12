@@ -35,13 +35,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
-};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -53,88 +46,110 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var user_query_1 = require("./user.query");
 var yup = __importStar(require("yup"));
-var bcrypt_1 = __importDefault(require("bcrypt"));
 var validationWording_1 = __importDefault(require("../../constants/validationWording"));
-var user_repository_1 = __importDefault(require("./user.repository"));
-var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-var NotFoundError_1 = __importDefault(require("../../interfaces/NotFoundError"));
-var InvalidRequestError_1 = __importDefault(require("../../interfaces/InvalidRequestError"));
-var keys_1 = __importDefault(require("../../constants/keys"));
-var getAllRoleKey_1 = __importDefault(require("./helpers/getAllRoleKey"));
-var user_model_1 = require("./user.model");
-exports.createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var body, schema, validatedBody, userRepository, user;
+exports.getAllUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var query, users;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                body = req.body;
-                schema = yup.object().shape({
+                query = req.query;
+                if (!(Object.keys(query).length > 0)) return [3 /*break*/, 2];
+                return [4 /*yield*/, user_query_1.searchUserQuery(query)];
+            case 1:
+                users = _a.sent();
+                return [3 /*break*/, 4];
+            case 2: return [4 /*yield*/, user_query_1.getAllUserQuery()];
+            case 3:
+                users = _a.sent();
+                _a.label = 4;
+            case 4:
+                res.json({
+                    message: 'successfully get users',
+                    data: users
+                });
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var validation, validatedBody, user;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                validation = yup.object().shape({
+                    role_id: yup.number().required(validationWording_1.default.required('role_id')),
+                    name: yup.string().required(validationWording_1.default.required('name')),
                     email: yup
                         .string()
-                        .email(validationWording_1.default.invalid('email'))
+                        .email()
                         .required(validationWording_1.default.required('email')),
                     password: yup
                         .string()
-                        .min(8, validationWording_1.default.minLength(8))
-                        .required(validationWording_1.default.required('password')),
-                    name: yup.string().required(validationWording_1.default.required('name')),
-                    role: yup
-                        .mixed()
-                        .oneOf(getAllRoleKey_1.default(), validationWording_1.default.oneOf.apply(validationWording_1.default, __spreadArrays(['role'], getAllRoleKey_1.default())))
+                        .min(6, validationWording_1.default.minLength(6))
+                        .required('password'),
+                    jadwal_id: yup.number(),
+                    sekolah_tujuan: yup.string().default(''),
+                    code_verification: yup.string().default('')
                 });
-                validatedBody = schema.validateSync(body);
-                userRepository = new user_repository_1.default();
-                return [4 /*yield*/, userRepository.create({
-                        email: validatedBody.email,
-                        password: validatedBody.password,
-                        role: user_model_1.Role[validatedBody.role],
-                        name: validatedBody.name
-                    })];
+                validatedBody = validation.validateSync(req.body);
+                return [4 /*yield*/, user_query_1.createUserQuery(validatedBody)];
             case 1:
                 user = _a.sent();
                 res.json({
-                    message: 'success creating user',
+                    message: 'successfully create user',
                     data: user
                 });
                 return [2 /*return*/];
         }
     });
 }); };
-exports.loginUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var body, schema, validatedBody, userRepository, user, token;
+exports.deleteUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var paramValidatoin, validatedParam, user;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                body = req.body;
-                schema = yup.object().shape({
-                    email: yup
-                        .string()
-                        .email(validationWording_1.default.invalid('email'))
-                        .required(validationWording_1.default.required('email')),
-                    password: yup.string().required(validationWording_1.default.required('password'))
+                paramValidatoin = yup.object().shape({
+                    userId: yup.number().required()
                 });
-                validatedBody = schema.validateSync(body);
-                userRepository = new user_repository_1.default();
-                return [4 /*yield*/, userRepository.findOneUserWithPassword({
-                        email: validatedBody.email
-                    })];
+                validatedParam = paramValidatoin.validateSync(req.params);
+                return [4 /*yield*/, user_query_1.deleteUserQuery(validatedParam.userId)];
             case 1:
                 user = _a.sent();
-                if (!user) {
-                    throw new NotFoundError_1.default(validationWording_1.default.notFound('user'), 'user');
-                }
-                if (!bcrypt_1.default.compareSync(validatedBody.password, user.password)) {
-                    throw new InvalidRequestError_1.default(validationWording_1.default.invalid('password'), 'password');
-                }
-                delete user.password;
-                token = jsonwebtoken_1.default.sign({ data: user }, keys_1.default.secretKey, {
-                    expiresIn: '1h'
-                });
                 res.json({
-                    data: user,
-                    token: token,
-                    message: 'Successfully login'
+                    message: 'successfully deleting user',
+                    data: user
+                });
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.editUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var paramValidation, validation, validatedBody, validatedParam, user;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                paramValidation = yup.object().shape({
+                    userId: yup.number().required()
+                });
+                validation = yup.object().shape({
+                    role_id: yup.number(),
+                    name: yup.string(),
+                    email: yup.string().email(),
+                    password: yup.string().min(6, validationWording_1.default.minLength(6)),
+                    jadwal_id: yup.number(),
+                    sekolah_tujuan: yup.string().default(''),
+                    code_verification: yup.string().default('')
+                });
+                validatedBody = validation.validateSync(req.body);
+                validatedParam = paramValidation.validateSync(req.params);
+                return [4 /*yield*/, user_query_1.editUserQuery(validatedParam.userId, validatedBody)];
+            case 1:
+                user = _a.sent();
+                res.json({
+                    message: 'successfully deleting user',
+                    data: user
                 });
                 return [2 /*return*/];
         }

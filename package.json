@@ -26,6 +26,7 @@
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.20.11",
     "mongoose": "^5.9.0",
+    "mysql": "^2.18.1",
     "mysql2": "^2.1.0",
     "redis": "^3.0.2",
     "swagger-jsdoc": "^3.5.0",

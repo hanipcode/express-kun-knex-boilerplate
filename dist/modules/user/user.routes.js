@@ -10,9 +10,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var express_1 = require("express");
 var userController = __importStar(require("./user.controller"));
-var createErrorHandledRouter_1 = __importDefault(require("../../routers/createErrorHandledRouter"));
-var userRouter = createErrorHandledRouter_1.default();
+var withErrorHandlerRoute_1 = __importDefault(require("../../routers/withErrorHandlerRoute"));
+var router = express_1.Router();
+var errorHandledRouter = withErrorHandlerRoute_1.default(router);
+/**
+ * @swagger
+ *
+ * /users:
+ *   get:
+ *     tags: ['User']
+ *     summary: Get All User
+ *     parameters:
+ *       - name: email
+ *         in: query
+ *       - name: name
+ *         in: query
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: login
+ */
+errorHandledRouter.get('/', userController.getAllUser);
 /**
  * @swagger
  *
@@ -20,64 +41,71 @@ var userRouter = createErrorHandledRouter_1.default();
  *   post:
  *     tags: ['User']
  *     summary: Create User
- *     description: Create User
- *     produces:
- *       - application/json
  *     parameters:
  *       - name: email
- *         description: User's Email
  *         in: formData
- *         required: true
- *         type: string
- *         default: hanif@mail.com
- *       - name: password
- *         description: User's Password.
- *         in: formData
- *         format: password
- *         required: true
- *         type: string
  *       - name: name
- *         description: User's Name
  *         in: formData
- *         required: true
- *         type: string
- *       - name: role
- *         description: User's role
+ *       - name: role_id
  *         in: formData
- *         required: true
- *         type: string
+ *       - name: password
+ *         in: formData
+ *       - name: jadwal_id
+ *         in: formData
+ *       - name: sekolah_tujuan
+ *         in: formData
+ *     produces:
+ *       - application/json
  *     responses:
  *       200:
  *         description: login
  */
-userRouter.post('/', userController.createUser);
+errorHandledRouter.post('/', userController.createUser);
 /**
  * @swagger
  *
- * /users/login:
- *   post:
+ * /users/{userId}:
+ *   delete:
  *     tags: ['User']
- *     summary: User Login
- *     description: User login
+ *     summary: Get All User
+ *     parameters:
+ *       - name: userId
+ *         in: path
  *     produces:
  *       - application/json
- *     parameters:
- *       - name: email
- *         description: User's Email
- *         in: formData
- *         required: true
- *         type: string
- *         default: hanif@mail.com
- *       - name: password
- *         description: User's Password.
- *         format: password
- *         in: formData
- *         required: true
- *         type: string
  *     responses:
  *       200:
  *         description: login
  */
-userRouter.post('/login', userController.loginUser);
-exports.default = userRouter;
+errorHandledRouter.delete('/:userId', userController.deleteUser);
+/**
+ * @swagger
+ *
+ * /users/{userId}:
+ *   put:
+ *     tags: ['User']
+ *     summary: Edit User
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *       - name: email
+ *         in: formData
+ *       - name: name
+ *         in: formData
+ *       - name: role_id
+ *         in: formData
+ *       - name: password
+ *         in: formData
+ *       - name: jadwal_id
+ *         in: formData
+ *       - name: sekolah_tujuan
+ *         in: formData
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: login
+ */
+errorHandledRouter.put('/:userId', userController.editUser);
+exports.default = router;
 //# sourceMappingURL=user.routes.js.map

@@ -6,10 +6,10 @@ const baseModulePath = './src/modules';
 const getPath = (path: string): string => `${baseModulePath}${path}`;
 
 const docsSources = [
-  getPath('/user/user.routes.ts'),
-  getPath('/sample/sample.routes.ts'),
-  getPath('/shipment/shipment.routes.ts'),
-  getPath('/status_log/sample_status_log.routes.ts')
+  getPath('/user/user.routes.ts')
+  // getPath('/sample/sample.routes.ts'),
+  // getPath('/shipment/shipment.routes.ts'),
+  // getPath('/status_log/sample_status_log.routes.ts')
 ];
 
 export default function generateDoc(app: Application) {
@@ -24,7 +24,7 @@ export default function generateDoc(app: Application) {
       },
       components: {},
       info: {
-        title: 'Sell Api Documentation',
+        title: 'Pencatar Api Documentation',
         version: '1.0.0'
       },
       basePath: '/api/v1'
