@@ -1,9 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import initDB from './utils/initDB';
 import useApiRouter from './routes';
 import generateDoc from './utils/generateDoc';
-initDB();
 
 const app = express();
 
