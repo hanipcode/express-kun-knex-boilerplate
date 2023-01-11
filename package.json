@@ -24,7 +24,7 @@
     "express-kun": "^1.0.14",
     "jest": "^25.1.0",
     "jsonwebtoken": "^8.5.1",
-    "knex": "^0.20.11",
+    "knex": "^2.4.0",
     "mongoose": "^5.9.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.1.0",
